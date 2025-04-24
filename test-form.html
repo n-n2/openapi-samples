@@ -82,6 +82,8 @@
     <div class="tabs">
         <div class="tab active" onclick="showTab('form-tab')">Generate Video</div>
         <div class="tab" onclick="showTab('status-tab')">Check Status</div>
+        <div class="tab" onclick="showTab('export-tab')">Export Video</div>
+        <div class="tab" onclick="showTab('download-tab')">Get Download URL</div>
         <div class="tab" onclick="showTab('json-tab')">JSON Request</div>
         <div class="tab" onclick="showTab('fetch-tab')">Fetch Code</div>
     </div>
@@ -125,6 +127,44 @@
                 <input type="text" id="statusApiSecret" name="apiSecret" required placeholder="Your Visla API Secret">
             </div>
             <button type="button" onclick="checkStatus()">Check Status</button>
+        </form>
+    </div>
+    
+    <div id="export-tab" class="tab-content">
+        <h2>Export Video to Clip</h2>
+        <form id="exportForm">
+            <div class="form-group">
+                <label for="exportVideoId">Video ID:</label>
+                <input type="text" id="exportVideoId" name="videoId" required placeholder="Enter the video ID to export">
+            </div>
+            <div class="form-group">
+                <label for="exportApiKey">API Key:</label>
+                <input type="text" id="exportApiKey" name="apiKey" required placeholder="Your Visla API Key">
+            </div>
+            <div class="form-group">
+                <label for="exportApiSecret">API Secret:</label>
+                <input type="text" id="exportApiSecret" name="apiSecret" required placeholder="Your Visla API Secret">
+            </div>
+            <button type="button" onclick="exportVideo()">Export to Clip</button>
+        </form>
+    </div>
+    
+    <div id="download-tab" class="tab-content">
+        <h2>Get Clip Download URL</h2>
+        <form id="downloadForm">
+            <div class="form-group">
+                <label for="clipId">Clip ID:</label>
+                <input type="text" id="clipId" name="clipId" required placeholder="Enter the clip ID">
+            </div>
+            <div class="form-group">
+                <label for="downloadApiKey">API Key:</label>
+                <input type="text" id="downloadApiKey" name="apiKey" required placeholder="Your Visla API Key">
+            </div>
+            <div class="form-group">
+                <label for="downloadApiSecret">API Secret:</label>
+                <input type="text" id="downloadApiSecret" name="apiSecret" required placeholder="Your Visla API Secret">
+            </div>
+            <button type="button" onclick="getDownloadUrl()">Get Download URL</button>
         </form>
     </div>
     
@@ -185,6 +225,40 @@ const checkVideoStatus = async (videoId, apiKey, apiSecret) => {
         return data;
     } catch (error) {
         console.error('Error checking video status:', error);
+        throw error;
+    }
+};
+
+// Export Video to Clip
+const exportVideoToClip = async (videoId, apiKey, apiSecret) => {
+    try {
+        const response = await fetch(`/api/video/${videoId}/export`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                apiKey,
+                apiSecret
+            })
+        });
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error exporting video to clip:', error);
+        throw error;
+    }
+};
+
+// Get Clip Download URL
+const getClipDownloadUrl = async (clipId, apiKey, apiSecret) => {
+    try {
+        const response = await fetch(`/api/clip/${clipId}/download-url?apiKey=${apiKey}&apiSecret=${apiSecret}`);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error getting clip download URL:', error);
         throw error;
     }
 };
@@ -257,6 +331,66 @@ const checkVideoStatus = async (videoId, apiKey, apiSecret) => {
             
             try {
                 const response = await fetch(`/api/video/${videoId}/status?apiKey=${apiKey}&apiSecret=${apiSecret}`);
+                const data = await response.json();
+                responseDiv.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseDiv.textContent = `Error: ${error.message}`;
+                console.error('Error:', error);
+            }
+        }
+        
+        async function exportVideo() {
+            const responseDiv = document.getElementById('response');
+            responseDiv.style.display = 'block';
+            responseDiv.textContent = 'Exporting video to clip...';
+            
+            const form = document.getElementById('exportForm');
+            const videoId = form.elements['videoId'].value;
+            const apiKey = form.elements['apiKey'].value;
+            const apiSecret = form.elements['apiSecret'].value;
+            
+            if (!videoId || !apiKey || !apiSecret) {
+                responseDiv.textContent = 'Error: All fields are required';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/video/${videoId}/export`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        apiKey,
+                        apiSecret
+                    })
+                });
+                
+                const data = await response.json();
+                responseDiv.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseDiv.textContent = `Error: ${error.message}`;
+                console.error('Error:', error);
+            }
+        }
+        
+        async function getDownloadUrl() {
+            const responseDiv = document.getElementById('response');
+            responseDiv.style.display = 'block';
+            responseDiv.textContent = 'Getting download URL...';
+            
+            const form = document.getElementById('downloadForm');
+            const clipId = form.elements['clipId'].value;
+            const apiKey = form.elements['apiKey'].value;
+            const apiSecret = form.elements['apiSecret'].value;
+            
+            if (!clipId || !apiKey || !apiSecret) {
+                responseDiv.textContent = 'Error: All fields are required';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/clip/${clipId}/download-url?apiKey=${apiKey}&apiSecret=${apiSecret}`);
                 const data = await response.json();
                 responseDiv.textContent = JSON.stringify(data, null, 2);
             } catch (error) {

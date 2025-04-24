@@ -58,7 +58,27 @@ const checkVideoStatus = (videoId, apiKey, apiSecret) => {
         .then(res => res.json());
 }
 
+const exportVideoToClip = (videoId, apiKey, apiSecret) => {
+    const url = `https://openapi.visla.us/openapi/project/${videoId}/export-video`;
+    const headers = signOpenApiHeaders('POST', url, apiKey, apiSecret);
+    const options = {method: 'POST', headers: headers};
+
+    return fetch(url, options)
+        .then(res => res.json());
+}
+
+const getClipDownloadUrl = (clipId, apiKey, apiSecret) => {
+    const url = `https://openapi.visla.us/openapi/clip/${clipId}/get-download-link`;
+    const headers = signOpenApiHeaders('GET', url, apiKey, apiSecret);
+    const options = {method: 'GET', headers: headers};
+
+    return fetch(url, options)
+        .then(res => res.json());
+}
+
 module.exports = {
     makeVideoFromScript,
-    checkVideoStatus
+    checkVideoStatus,
+    exportVideoToClip,
+    getClipDownloadUrl
 };

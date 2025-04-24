@@ -105,6 +105,59 @@ GET /api/video/123456789/status?apiKey=your_api_key&apiSecret=your_api_secret
 }
 ```
 
+### Export Video to Clip
+`POST /api/video/:videoId/export`
+
+Exports a video to a clip that can be downloaded.
+
+**URL Parameters:**
+- `videoId`: The ID of the video to export (received from the generate-video response)
+
+**Request Body:**
+```json
+{
+  "apiKey": "your_api_key",
+  "apiSecret": "your_api_secret"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Video exported to clip successfully",
+  "data": {
+    // Visla API export response data
+  }
+}
+```
+
+### Get Clip Download URL
+`GET /api/clip/:clipId/download-url`
+
+Retrieves the download URL for a previously exported clip.
+
+**URL Parameters:**
+- `clipId`: The ID of the clip to download (received from the export-video response)
+
+**Query Parameters:**
+- `apiKey`: Your Visla API key (optional if set in environment variables)
+- `apiSecret`: Your Visla API secret (optional if set in environment variables)
+
+**Example Request:**
+```
+GET /api/clip/123456789/download-url?apiKey=your_api_key&apiSecret=your_api_secret
+```
+
+**Response:**
+```json
+{
+  "message": "Clip download URL retrieved successfully",
+  "data": {
+    // Visla API response with download URL
+  }
+}
+```
+
 ### Health Check
 `GET /health`
 
