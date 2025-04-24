@@ -20,7 +20,8 @@ app.get('/', (req, res) => {
 
 // Routes
 app.post('/api/generate-video', async (req, res) => {
-  try {
+  console.log(req.body);
+    try {
     const { script, webhookUrl, apiKey, apiSecret } = req.body;
     
     // Validate required inputs
