@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { makeVideoFromScript } = require('./utils');
+const { makeVideoFromScript, checkVideoStatus } = require('./utils');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -73,6 +73,45 @@ app.post('/api/generate-video', async (req, res) => {
 // Health check route
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
+});
+
+// Video status endpoint
+app.get('/api/video/:videoId/status', async (req, res) => {
+  try {
+    const { videoId } = req.params;
+    
+    // Get API credentials from environment variables or query params
+    const apiKey = req.query.apiKey || process.env.VISLA_API_KEY;
+    const apiSecret = req.query.apiSecret || process.env.VISLA_API_SECRET;
+    
+    if (!apiKey || !apiSecret) {
+      return res.status(400).json({ 
+        error: 'API credentials are required. Either provide them as query parameters or set VISLA_API_KEY and VISLA_API_SECRET environment variables.' 
+      });
+    }
+    
+    console.log(`Checking status for video ID: ${videoId}`);
+    
+    // Call the function to check video status
+    const result = await checkVideoStatus(
+      videoId, 
+      apiKey, 
+      apiSecret
+    );
+    
+    console.log('API status response:', result);
+    
+    return res.status(200).json({ 
+      message: 'Video status retrieved successfully',
+      data: result
+    });
+  } catch (error) {
+    console.error('Error checking video status:', error);
+    return res.status(500).json({ 
+      error: 'Failed to retrieve video status',
+      message: error.message 
+    });
+  }
 });
 
 // Start the server

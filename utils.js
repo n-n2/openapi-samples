@@ -49,6 +49,16 @@ const makeVideoFromScript = (script,webhookUrl,apiKey,apiSecret) => {
         .then(res => res.json());
 };
 
+const checkVideoStatus = (videoId, apiKey, apiSecret) => {
+    const url = `https://openapi.visla.us/openapi/project/${videoId}/info`;
+    const headers = signOpenApiHeaders('GET', url, apiKey, apiSecret);
+    const options = {method: 'GET', headers: headers};
+
+    return fetch(url, options)
+        .then(res => res.json());
+}
+
 module.exports = {
-    makeVideoFromScript
+    makeVideoFromScript,
+    checkVideoStatus
 };

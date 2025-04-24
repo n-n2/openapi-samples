@@ -80,7 +80,8 @@
     <h1>Visla API Test</h1>
     
     <div class="tabs">
-        <div class="tab active" onclick="showTab('form-tab')">Test Form</div>
+        <div class="tab active" onclick="showTab('form-tab')">Generate Video</div>
+        <div class="tab" onclick="showTab('status-tab')">Check Status</div>
         <div class="tab" onclick="showTab('json-tab')">JSON Request</div>
         <div class="tab" onclick="showTab('fetch-tab')">Fetch Code</div>
     </div>
@@ -105,6 +106,25 @@
                 <input type="text" id="apiSecret" name="apiSecret" required placeholder="Your Visla API Secret">
             </div>
             <button type="button" onclick="submitForm()">Generate Video</button>
+        </form>
+    </div>
+    
+    <div id="status-tab" class="tab-content">
+        <h2>Check Video Status</h2>
+        <form id="statusForm">
+            <div class="form-group">
+                <label for="videoId">Video ID:</label>
+                <input type="text" id="videoId" name="videoId" required placeholder="Enter the video ID">
+            </div>
+            <div class="form-group">
+                <label for="statusApiKey">API Key:</label>
+                <input type="text" id="statusApiKey" name="apiKey" required placeholder="Your Visla API Key">
+            </div>
+            <div class="form-group">
+                <label for="statusApiSecret">API Secret:</label>
+                <input type="text" id="statusApiSecret" name="apiSecret" required placeholder="Your Visla API Secret">
+            </div>
+            <button type="button" onclick="checkStatus()">Check Status</button>
         </form>
     </div>
     
@@ -133,6 +153,7 @@ fetch('/api/generate-video', {
         <h2>Fetch Code</h2>
         <p>Copy this code to test the API from your JavaScript application:</p>
         <pre>
+// Generate Video
 const generateVideo = async (script, webhookUrl, apiKey, apiSecret) => {
     try {
         const response = await fetch('/api/generate-video', {
@@ -152,6 +173,18 @@ const generateVideo = async (script, webhookUrl, apiKey, apiSecret) => {
         return data;
     } catch (error) {
         console.error('Error generating video:', error);
+        throw error;
+    }
+};
+
+// Check Video Status
+const checkVideoStatus = async (videoId, apiKey, apiSecret) => {
+    try {
+        const response = await fetch(`/api/video/${videoId}/status?apiKey=${apiKey}&apiSecret=${apiSecret}`);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error checking video status:', error);
         throw error;
     }
 };
@@ -199,6 +232,31 @@ const generateVideo = async (script, webhookUrl, apiKey, apiSecret) => {
                     body: JSON.stringify(formObject)
                 });
                 
+                const data = await response.json();
+                responseDiv.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseDiv.textContent = `Error: ${error.message}`;
+                console.error('Error:', error);
+            }
+        }
+        
+        async function checkStatus() {
+            const responseDiv = document.getElementById('response');
+            responseDiv.style.display = 'block';
+            responseDiv.textContent = 'Checking status...';
+            
+            const form = document.getElementById('statusForm');
+            const videoId = form.elements['videoId'].value;
+            const apiKey = form.elements['apiKey'].value;
+            const apiSecret = form.elements['apiSecret'].value;
+            
+            if (!videoId || !apiKey || !apiSecret) {
+                responseDiv.textContent = 'Error: All fields are required';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/video/${videoId}/status?apiKey=${apiKey}&apiSecret=${apiSecret}`);
                 const data = await response.json();
                 responseDiv.textContent = JSON.stringify(data, null, 2);
             } catch (error) {

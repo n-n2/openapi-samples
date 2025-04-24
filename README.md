@@ -78,6 +78,33 @@ You can also send the request as form-data with the same field names:
 }
 ```
 
+### Check Video Status
+`GET /api/video/:videoId/status`
+
+Retrieves the status of a video generation request.
+
+**URL Parameters:**
+- `videoId`: The ID of the video to check (received from the generate-video response)
+
+**Query Parameters:**
+- `apiKey`: Your Visla API key (optional if set in environment variables)
+- `apiSecret`: Your Visla API secret (optional if set in environment variables)
+
+**Example Request:**
+```
+GET /api/video/123456789/status?apiKey=your_api_key&apiSecret=your_api_secret
+```
+
+**Response:**
+```json
+{
+  "message": "Video status retrieved successfully",
+  "data": {
+    // Visla API status response data
+  }
+}
+```
+
 ### Health Check
 `GET /health`
 
