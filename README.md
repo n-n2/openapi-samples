@@ -28,22 +28,47 @@ A simple API for generating videos from scripts using the Visla service.
 
 ## API Endpoints
 
+### Hello World
+`GET /`
+
+Simple test endpoint to verify the API is running.
+
+**Response:**
+```json
+{
+  "message": "Hello, World!",
+  "status": "API is running correctly"
+}
+```
+
 ### Generate Video
 `POST /api/generate-video`
 
 Generates a video from a script using Visla's service.
 
-**Request Body:**
-```json
+#### Supported Request Formats
+This endpoint supports both JSON and form-data formats:
+
+**JSON Request:**
+```
+Content-Type: application/json
+
 {
   "script": "Your video script text here",
   "webhookUrl": "https://your-server.com/webhook-endpoint",
-  "apiKey": "optional_if_set_in_env",
-  "apiSecret": "optional_if_set_in_env"
+  "apiKey": "your_api_key",
+  "apiSecret": "your_api_secret"
 }
 ```
 
-**Response:**
+**Form Data Request:**
+You can also send the request as form-data with the same field names:
+- script
+- webhookUrl
+- apiKey
+- apiSecret
+
+#### Response:
 ```json
 {
   "message": "Video generation request submitted successfully",
@@ -64,6 +89,20 @@ Returns the health status of the API.
   "status": "ok"
 }
 ```
+
+## Troubleshooting
+
+### 404 Not Found
+If you're getting a "Cannot GET /api/generate-video" error, make sure:
+1. You're sending a POST request, not a GET request
+2. You're using the correct URL
+3. Your server is running
+
+### Request Format Issues
+If you're having trouble with the request format:
+1. Check that you're using either JSON (Content-Type: application/json) or form-data format
+2. Ensure all required fields are included in the request
+3. Check the console logs for any specific errors
 
 ## Security Notes
 

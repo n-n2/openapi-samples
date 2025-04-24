@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Hello World route for testing
 app.get('/', (req, res) => {
@@ -18,10 +19,19 @@ app.get('/', (req, res) => {
   });
 });
 
+// Helpful message for GET requests to the POST endpoint
+app.get('/api/generate-video', (req, res) => {
+  res.status(405).json({
+    error: 'Method not allowed',
+    message: 'This endpoint requires a POST request. Please make sure you are sending a POST request with the required parameters.',
+    requiredParameters: ['script', 'webhookUrl', 'apiKey', 'apiSecret']
+  });
+});
+
 // Routes
 app.post('/api/generate-video', async (req, res) => {
-  console.log(req.body);
-    try {
+  console.log('Received request body:', req.body);
+  try {
     const { script, webhookUrl, apiKey, apiSecret } = req.body;
     
     // Validate required inputs
@@ -35,6 +45,8 @@ app.post('/api/generate-video', async (req, res) => {
       });
     }
     
+    console.log('Processing request with script length:', script.length);
+    
     // Call the function to make a video
     const result = await makeVideoFromScript(
       script, 
@@ -42,6 +54,8 @@ app.post('/api/generate-video', async (req, res) => {
       apiKey, 
       apiSecret
     );
+    
+    console.log('API response:', result);
     
     return res.status(200).json({ 
       message: 'Video generation request submitted successfully',
@@ -64,4 +78,6 @@ app.get('/health', (req, res) => {
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  console.log(`Test the API with http://localhost:${PORT}/`);
+  console.log(`Generate videos with POST http://localhost:${PORT}/api/generate-video`);
 }); 

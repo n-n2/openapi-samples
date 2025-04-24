@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visla API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        textarea {
+            min-height: 100px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            white-space: pre-wrap;
+            display: none;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            background-color: #f1f1f1;
+            margin-right: 5px;
+            border-radius: 4px 4px 0 0;
+        }
+        .tab.active {
+            background-color: #fff;
+            border-bottom: 1px solid #fff;
+        }
+        .tab-content {
+            display: none;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 0 4px 4px 4px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Visla API Test</h1>
+    
+    <div class="tabs">
+        <div class="tab active" onclick="showTab('form-tab')">Test Form</div>
+        <div class="tab" onclick="showTab('json-tab')">JSON Request</div>
+        <div class="tab" onclick="showTab('fetch-tab')">Fetch Code</div>
+    </div>
+    
+    <div id="form-tab" class="tab-content active">
+        <h2>Generate Video Form</h2>
+        <form id="videoForm">
+            <div class="form-group">
+                <label for="script">Script:</label>
+                <textarea id="script" name="script" required>Wondering why your energy bill is sky-high? The culprit might be hiding behind your dryer! Cleaning the lint trap is essential for efficiency.</textarea>
+            </div>
+            <div class="form-group">
+                <label for="webhookUrl">Webhook URL:</label>
+                <input type="url" id="webhookUrl" name="webhookUrl" placeholder="https://your-server.com/webhook" value="https://example.com/webhook">
+            </div>
+            <div class="form-group">
+                <label for="apiKey">API Key:</label>
+                <input type="text" id="apiKey" name="apiKey" required placeholder="Your Visla API Key">
+            </div>
+            <div class="form-group">
+                <label for="apiSecret">API Secret:</label>
+                <input type="text" id="apiSecret" name="apiSecret" required placeholder="Your Visla API Secret">
+            </div>
+            <button type="button" onclick="submitForm()">Generate Video</button>
+        </form>
+    </div>
+    
+    <div id="json-tab" class="tab-content">
+        <h2>JSON Request Example</h2>
+        <pre>
+fetch('/api/generate-video', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        "script": "Wondering why your energy bill is sky-high? The culprit might be hiding behind your dryer!",
+        "webhookUrl": "https://example.com/webhook",
+        "apiKey": "your_api_key",
+        "apiSecret": "your_api_secret"
+    })
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Error:', error));
+        </pre>
+    </div>
+    
+    <div id="fetch-tab" class="tab-content">
+        <h2>Fetch Code</h2>
+        <p>Copy this code to test the API from your JavaScript application:</p>
+        <pre>
+const generateVideo = async (script, webhookUrl, apiKey, apiSecret) => {
+    try {
+        const response = await fetch('/api/generate-video', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                script,
+                webhookUrl,
+                apiKey,
+                apiSecret
+            })
+        });
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error generating video:', error);
+        throw error;
+    }
+};
+        </pre>
+    </div>
+    
+    <div id="response"></div>
+    
+    <script>
+        function showTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show the selected tab content
+            document.getElementById(tabId).classList.add('active');
+            
+            // Add active class to the clicked tab
+            event.currentTarget.classList.add('active');
+        }
+        
+        async function submitForm() {
+            const responseDiv = document.getElementById('response');
+            responseDiv.style.display = 'block';
+            responseDiv.textContent = 'Sending request...';
+            
+            const formData = new FormData(document.getElementById('videoForm'));
+            const formObject = {};
+            formData.forEach((value, key) => {
+                formObject[key] = value;
+            });
+            
+            try {
+                const response = await fetch('/api/generate-video', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formObject)
+                });
+                
+                const data = await response.json();
+                responseDiv.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseDiv.textContent = `Error: ${error.message}`;
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html> 
