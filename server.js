@@ -10,6 +10,14 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Hello World route for testing
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    message: 'Hello, World!',
+    status: 'API is running correctly' 
+  });
+});
+
 // Routes
 app.post('/api/generate-video', async (req, res) => {
   try {
