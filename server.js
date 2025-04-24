@@ -21,16 +21,12 @@ app.get('/', (req, res) => {
 // Routes
 app.post('/api/generate-video', async (req, res) => {
   try {
-    const { script, webhookUrl } = req.body;
+    const { script, webhookUrl, apiKey, apiSecret } = req.body;
     
     // Validate required inputs
     if (!script) {
       return res.status(400).json({ error: 'Script is required' });
     }
-    
-    // Get API credentials from environment variables or request
-    const apiKey = req.body.apiKey || process.env.VISLA_API_KEY;
-    const apiSecret = req.body.apiSecret || process.env.VISLA_API_SECRET;
     
     if (!apiKey || !apiSecret) {
       return res.status(400).json({ 
