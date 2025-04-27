@@ -41,7 +41,8 @@ const makeVideoFromScript = (script,webhookUrl,apiKey,apiSecret) => {
             use_premium_stocks: true
           },
           target_video: {burn_subtitles: true},
-          bgm_options: {use_free_stocks: true}
+          bgm_options: {use_free_stocks: true},
+          footage_options: {"use_free_stocks": true,"use_premium_stocks": true,"use_premium_stocks_getty": true}
         })
       };
       
